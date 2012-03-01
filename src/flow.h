@@ -48,10 +48,10 @@
 #define FLOW_FILE_NO_MAGIC_TS             0x00000008
 #define FLOW_FILE_NO_MAGIC_TC             0x00000010
 
-/** Flow was inspected against IP-Only sigs in the toserver direction */
-#define FLOW_TOSERVER_IPONLY_SET          0x00000020
-/** Flow was inspected against IP-Only sigs in the toclient direction */
-#define FLOW_TOCLIENT_IPONLY_SET          0x00000040
+/** Flow has run DETECT_INIT in the toserver direction */
+#define FLOW_TOSERVER_DETECT_INIT         0x00000020
+/** Flow has run DETECT_INIT in the toclient direction */
+#define FLOW_TOCLIENT_DETECT_INIT         0x00000040
 
 /** Packet belonging to this flow should not be inspected at all */
 #define FLOW_NOPACKET_INSPECTION          0x00000080
@@ -61,10 +61,7 @@
 /** All packets in this flow should be dropped */
 #define FLOW_ACTION_DROP                  0x00000200
 
-/** Sgh for toserver direction set (even if it's NULL) */
-#define FLOW_SGH_TOSERVER                 0x00000800
-/** Sgh for toclient direction set (even if it's NULL) */
-#define FLOW_SGH_TOCLIENT                 0x00001000
+// vacancy 2x
 
 /** packet to server direction has been logged in drop file (only in IPS mode) */
 #define FLOW_TOSERVER_DROP_LOGGED         0x00002000
@@ -170,8 +167,9 @@
 #define FLOW_PKT_TOCLIENT               0x02
 #define FLOW_PKT_ESTABLISHED            0x04
 #define FLOW_PKT_STATELESS              0x08
-#define FLOW_PKT_TOSERVER_IPONLY_SET    0x10
-#define FLOW_PKT_TOCLIENT_IPONLY_SET    0x20
+#define FLOW_PKT_FIRST_IN_DIR           0x10
+#define FLOW_PKT_TOSERVER_DETECT_INIT   0x20
+#define FLOW_PKT_TOCLIENT_DETECT_INIT   0x40
 /** \todo only used by flow keyword internally. */
 #define FLOW_PKT_NOSTREAM               0x40
 /** \todo only used by flow keyword internally. */
@@ -386,8 +384,8 @@ void FlowHandlePacket (ThreadVars *, Packet *);
 void FlowInitConfig (char);
 void FlowPrintQueueInfo (void);
 void FlowShutdown(void);
-void FlowSetIPOnlyFlag(Flow *, char);
-void FlowSetIPOnlyFlagNoLock(Flow *, char);
+void FlowSetDetectInitFlag(Flow *, char);
+void FlowSetDetectInitFlagNoLock(Flow *, char);
 
 void FlowIncrUsecnt(Flow *);
 void FlowDecrUsecnt(Flow *);

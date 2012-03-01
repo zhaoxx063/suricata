@@ -87,6 +87,7 @@ detect-engine-hcd.c detect-engine-hcd.h \
 detect-engine-hhd.c detect-engine-hhd.h \
 detect-engine-hhhd.c detect-engine-hhhd.h \
 detect-engine-hmd.c detect-engine-hmd.h \
+detect-engine-hook.c detect-engine-hook.h \
 detect-engine-hrhd.c detect-engine-hrhd.h \
 detect-engine-hrhhd.c detect-engine-hrhhd.h \
 detect-engine-hrud.c detect-engine-hrud.h \

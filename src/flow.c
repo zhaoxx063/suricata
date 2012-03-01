@@ -145,32 +145,6 @@ int FlowUpdateSpareFlows(void)
     return 1;
 }
 
-/** \brief Set the IPOnly scanned flag for 'direction'. This function
-  *        handles the locking too.
-  * \param f Flow to set the flag in
-  * \param direction direction to set the flag in
-  */
-void FlowSetIPOnlyFlag(Flow *f, char direction)
-{
-    FLOWLOCK_WRLOCK(f);
-    direction ? (f->flags |= FLOW_TOSERVER_IPONLY_SET) :
-        (f->flags |= FLOW_TOCLIENT_IPONLY_SET);
-    FLOWLOCK_UNLOCK(f);
-    return;
-}
-
-/** \brief Set the IPOnly scanned flag for 'direction'.
-  *
-  * \param f Flow to set the flag in
-  * \param direction direction to set the flag in
-  */
-void FlowSetIPOnlyFlagNoLock(Flow *f, char direction)
-{
-    direction ? (f->flags |= FLOW_TOSERVER_IPONLY_SET) :
-        (f->flags |= FLOW_TOCLIENT_IPONLY_SET);
-    return;
-}
-
 /**
  *  \brief increase the use cnt of a flow
  *
@@ -251,6 +225,32 @@ static inline int FlowUpdateSeenFlag(Packet *p)
     return 1;
 }
 
+/** \brief Set the DETECT INIT flag for 'direction'. This function
+  *        handles the locking too.
+  * \param f Flow to set the flag in
+  * \param direction direction to set the flag in
+  */
+void FlowSetDetectInitFlag(Flow *f, char direction)
+{
+    SCMutexLock(&f->m);
+    direction ? (f->flags |= FLOW_TOSERVER_DETECT_INIT) :
+        (f->flags |= FLOW_TOCLIENT_DETECT_INIT);
+    SCMutexUnlock(&f->m);
+    return;
+}
+
+/** \brief Set the DETECT INIT flag for 'direction'.
+  *
+  * \param f Flow to set the flag in
+  * \param direction direction to set the flag in
+  */
+void FlowSetDetectInitFlagNoLock(Flow *f, char direction)
+{
+    direction ? (f->flags |= FLOW_TOSERVER_DETECT_INIT) :
+        (f->flags |= FLOW_TOCLIENT_DETECT_INIT);
+    return;
+}
+
 /** \brief Entry point for packet flow handling
  *
  * This is called for every packet.
@@ -273,6 +273,9 @@ void FlowHandlePacket (ThreadVars *tv, Packet *p)
     /* update flags and counters */
     if (FlowGetPacketDirection(f,p) == TOSERVER) {
         if (FlowUpdateSeenFlag(p)) {
+            if (!(f->flags & FLOW_TO_DST_SEEN))
+                p->flowflags |= FLOW_PKT_FIRST_IN_DIR;
+
             f->flags |= FLOW_TO_DST_SEEN;
         }
 #ifdef DEBUG
@@ -281,6 +284,9 @@ void FlowHandlePacket (ThreadVars *tv, Packet *p)
         p->flowflags |= FLOW_PKT_TOSERVER;
     } else {
         if (FlowUpdateSeenFlag(p)) {
+            if (!(f->flags & FLOW_TO_SRC_SEEN))
+                p->flowflags |= FLOW_PKT_FIRST_IN_DIR;
+
             f->flags |= FLOW_TO_SRC_SEEN;
         }
 #ifdef DEBUG

@@ -21,22 +21,25 @@
  * \author Victor Julien <victor@inliniac.net>
  */
 
-#ifndef __DETECT_FILESIZE_H__
-#define	__DETECT_FILESIZE_H__
+#ifndef __DETECT_ENGINE_HOOK_H__
+#define __DETECT_ENGINE_HOOK_H__
 
-#define DETECT_FILESIZE_LT   0   /**< "less than" operator */
-#define DETECT_FILESIZE_GT   1   /**< "greater than" operator */
-#define DETECT_FILESIZE_RA   2   /**< range operator */
-#define DETECT_FILESIZE_EQ   3   /**< equal operator */
+/* hooks */
+#define DETECT_HOOK_MAX 7
 
-typedef struct DetectFilesizeData_ {
-    uint64_t size1;     /**< 1st value in the signature*/
-    uint64_t size2;     /**< 2nd value in the signature*/
-    uint8_t mode;       /**< operator used in the signature */
-} DetectFilesizeData;
+#define DETECT_HOOK_ERROR -1
+#define DETECT_HOOK_OK 0
 
-void DetectFilesizeRegister(void);
+typedef struct DetectHook_ {
+    /* number of callbacks for this hook */
+    int cnt;
+#if __WORDSIZE == 64
+    int pad;
+#endif
+    /** array of callback ptrs */
+    int (*Callback[DETECT_HOOK_MAX])();
+} DetectHook;
 
-int FilesizeHook(DetectEngineCtx *, DetectEngineThreadCtx *, Packet *);
+/* function prototypes in detect.c */
 
-#endif	/* _DETECT_URILEN_H */
+#endif /* __DETECT_ENGINE_HOOK_H__ */

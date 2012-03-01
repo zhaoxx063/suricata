@@ -53,6 +53,7 @@
 #include "util-unittest.h"
 #include "util-unittest-helper.h"
 #include "util-print.h"
+#include "util-profiling.h"
 
 #ifdef OS_WIN32
 #include <winsock.h>
@@ -1525,6 +1526,21 @@ void IPOnlyAddSignature(DetectEngineCtx *de_ctx, DetectEngineIPOnlyCtx *io_ctx,
     /** no longer ref to this, it's in the table now */
     s->CidrSrc = NULL;
     s->CidrDst = NULL;
+}
+
+/** \brief Do IP Only inspection
+ *
+ *  \param de_ctx Detection engine ctx
+ *  \param det_ctx Detection engine thread context
+ *  \param p Packet
+ *
+ *  \retval DETECT_HOOK_OK in any case
+ */
+int IPOnlyHookCheck(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p) {
+    PACKET_PROFILING_DETECT_START(p, PROF_DETECT_IPONLY);
+    IPOnlyMatchPacket(det_ctx->tv, de_ctx, det_ctx, &de_ctx->io_ctx, &det_ctx->io_ctx, p);
+    PACKET_PROFILING_DETECT_END(p, PROF_DETECT_IPONLY);
+    return DETECT_HOOK_OK;
 }
 
 #ifdef UNITTESTS

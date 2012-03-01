@@ -253,12 +253,12 @@ TmEcode AlertDebugLogger(ThreadVars *tv, Packet *p, void *data, PacketQueue *pq,
                              p->flow->bytecnt);
 #endif
         MemBufferWriteString(aft->buffer,
-                             "FLOW IPONLY SET:   TOSERVER: %s, TOCLIENT: %s\n"
+                             "FLOW DETECT_INIT SET:   TOSERVER: %s, TOCLIENT: %s\n"
                              "FLOW ACTION:       DROP: %s\n"
                              "FLOW NOINSPECTION: PACKET: %s, PAYLOAD: %s, APP_LAYER: %s\n"
                              "FLOW APP_LAYER:    DETECTED: %s, PROTO %"PRIu16"\n",
-                             p->flow->flags & FLOW_TOSERVER_IPONLY_SET ? "TRUE" : "FALSE",
-                             p->flow->flags & FLOW_TOCLIENT_IPONLY_SET ? "TRUE" : "FALSE",
+                             p->flow->flags & FLOW_TOSERVER_DETECT_INIT ? "TRUE" : "FALSE",
+                             p->flow->flags & FLOW_TOCLIENT_DETECT_INIT ? "TRUE" : "FALSE",
                              p->flow->flags & FLOW_ACTION_DROP ? "TRUE" : "FALSE",
                              p->flow->flags & FLOW_NOPACKET_INSPECTION ? "TRUE" : "FALSE",
                              p->flow->flags & FLOW_NOPAYLOAD_INSPECTION ? "TRUE" : "FALSE",

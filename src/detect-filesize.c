@@ -38,6 +38,7 @@
 #include "util-byte.h"
 #include "flow-util.h"
 #include "stream-tcp.h"
+#include "util-validate.h"
 
 /**
  * \brief Regex for parsing our filesize
@@ -94,6 +95,42 @@ error:
     if (parse_regex_study != NULL)
         SCFree(parse_regex_study);
     return;
+}
+
+/**
+ *  \brief See if this flow requires file size tracking. If not, disable it.
+ *
+ *  Hook to run once per flow direction as soon as the SGH is known.
+ *
+ *  \param de_ctx Detection engine ctx
+ *  \param det_ctx Detection engine thread context
+ *  \param p Packet
+ *
+ *  \retval DETECT_HOOK_OK in any case
+ */
+int FilesizeHook(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p)
+{
+    DEBUG_ASSERT_FLOW_LOCKED(p);
+
+    if (p->flowflags & FLOW_PKT_TOSERVER) {
+        /* see if this sgh requires us to consider file size */
+        if (p->flow->sgh_toserver == NULL ||
+                !(p->flow->sgh_toserver->flags & SIG_GROUP_HEAD_HAVEFILESIZE))
+        {
+            SCLogDebug("disabling filesize tracking for flow");
+            FileDisableFilesize(p->flow, STREAM_TOSERVER);
+        }
+    } else if (p->flowflags & FLOW_PKT_TOCLIENT) {
+        /* check if this flow needs size tracking, if not disable it */
+        if (p->flow->sgh_toclient == NULL ||
+                !(p->flow->sgh_toclient->flags & SIG_GROUP_HEAD_HAVEFILESIZE))
+        {
+            SCLogDebug("disabling filesize for flow");
+            FileDisableFilesize(p->flow, STREAM_TOCLIENT);
+        }
+    }
+
+    return DETECT_HOOK_OK;
 }
 
 /**

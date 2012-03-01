@@ -51,6 +51,7 @@
 #include "stream-tcp.h"
 
 #include "detect-filemagic.h"
+#include "util-validate.h"
 
 #include "conf.h"
 #include "util-magic.h"
@@ -76,6 +77,42 @@ void DetectFilemagicRegister(void) {
 
 	SCLogDebug("registering filemagic rule option");
     return;
+}
+
+/**
+ *  \brief See if this flow requires magic. If not, disable it.
+ *
+ *  Hook to run once per flow direction as soon as the SGH is known.
+ *
+ *  \param de_ctx Detection engine ctx
+ *  \param det_ctx Detection engine thread context
+ *  \param p Packet
+ *
+ *  \retval DETECT_HOOK_OK in any case
+ */
+int FilemagicHook(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p)
+{
+    DEBUG_ASSERT_FLOW_LOCKED(p);
+
+    if (p->flowflags & FLOW_PKT_TOSERVER) {
+        /* see if this sgh requires us to consider file magic */
+        if (!FileForceMagic() && (p->flow->sgh_toserver == NULL ||
+                    !(p->flow->sgh_toserver->flags & SIG_GROUP_HEAD_HAVEFILEMAGIC)))
+        {
+            SCLogDebug("disabling magic for flow");
+            FileDisableMagic(p->flow, STREAM_TOSERVER);
+        }
+    } else if (p->flowflags & FLOW_PKT_TOCLIENT) {
+        /* check if this flow needs magic, if not disable it */
+        if (!FileForceMagic() && (p->flow->sgh_toclient == NULL ||
+                    !(p->flow->sgh_toclient->flags & SIG_GROUP_HEAD_HAVEFILEMAGIC)))
+        {
+            SCLogDebug("disabling magic for flow");
+            FileDisableMagic(p->flow, STREAM_TOCLIENT);
+        }
+    }
+
+    return DETECT_HOOK_OK;
 }
 
 #define FILEMAGIC_MIN_SIZE  512

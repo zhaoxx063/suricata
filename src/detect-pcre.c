@@ -1706,6 +1706,7 @@ static int DetectPcreTestSig02Real(int mpm_type) {
     p = UTHBuildPacket(buf, buflen, IPPROTO_TCP);
     p->flow = &f;
     p->flags |= PKT_HAS_FLOW|PKT_STREAM_EST;
+    p->flowflags |= FLOW_PKT_TOSERVER;
 
     pcre_match_limit = 100;
     pcre_match_limit_recursion = 100;

@@ -49,5 +49,7 @@ void DetectEngineIPOnlyThreadDeinit(DetectEngineIPOnlyThreadCtx *);
 void IPOnlyAddSignature(DetectEngineCtx *, DetectEngineIPOnlyCtx *, Signature *);
 void IPOnlyRegisterTests(void);
 
+int IPOnlyHookCheck(DetectEngineCtx *, DetectEngineThreadCtx *, Packet *);
+
 #endif /* __DETECT_ENGINE_IPONLY_H__ */
 

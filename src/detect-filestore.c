@@ -49,6 +49,7 @@
 #include "stream-tcp.h"
 
 #include "detect-filestore.h"
+#include "util-validate.h"
 
 /**
  * \brief Regex for parsing our flow options
@@ -98,6 +99,34 @@ void DetectFilestoreRegister(void) {
 error:
     /* XXX */
     return;
+}
+
+/**
+ *  \brief See if this flow (possibly) requires file storage. If not, disable it.
+ *
+ *  Hook to run once per flow direction as soon as the SGH is known.
+ *
+ *  \param de_ctx Detection engine ctx
+ *  \param det_ctx Detection engine thread context
+ *  \param p Packet
+ *
+ *  \retval DETECT_HOOK_OK in any case
+ */
+int FilestoreHook(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p) {
+    DEBUG_ASSERT_FLOW_LOCKED(p);
+
+    if (p->flowflags & FLOW_PKT_TOSERVER) {
+        /* see if this sgh requires us to consider file storing */
+        if (p->flow->sgh_toserver == NULL || p->flow->sgh_toserver->filestore_cnt == 0) {
+            FileDisableStoring(p->flow, STREAM_TOSERVER);
+        }
+    } else if (p->flowflags & FLOW_PKT_TOCLIENT) {
+        /* see if this sgh requires us to consider file storing */
+        if (p->flow->sgh_toclient == NULL || p->flow->sgh_toclient->filestore_cnt == 0) {
+            FileDisableStoring(p->flow, STREAM_TOCLIENT);
+        }
+    }
+    return DETECT_HOOK_OK;
 }
 
 /**

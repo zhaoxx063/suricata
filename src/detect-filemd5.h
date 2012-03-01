@@ -34,4 +34,6 @@ typedef struct DetectFileMd5Data {
 /* prototypes */
 void DetectFileMd5Register (void);
 
+int FileMd5Hook(DetectEngineCtx *, DetectEngineThreadCtx *, Packet *);
+
 #endif /* __DETECT_FILEMD5_H__ */

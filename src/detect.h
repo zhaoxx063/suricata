@@ -29,6 +29,8 @@
 #include "flow.h"
 
 #include "detect-engine-proto.h"
+#include "detect-engine-hook.h"
+
 #include "detect-reference.h"
 
 #include "packet-queue.h"
@@ -573,6 +575,19 @@ typedef struct DetectEngineCtx_ {
     /* main sigs */
     DetectEngineLookupFlow flow_gh[FLOW_STATES];
 
+    /* First time we've seen a packet for this direction of the flow */
+    DetectHook hook_flow_first_pkt_in_dir;
+    /* After the time we've seen a packet for this direction of the flow */
+    DetectHook hook_flow_after_first_pkt_in_dir;
+    /* All packets with flow */
+    DetectHook hook_flow_all_pkts;
+    /* All packets w/o flow */
+    DetectHook hook_no_flow_all_pkts;
+    /* All packets w/o flow */
+    DetectHook hook_all_pkts;
+    /* First time we've seen the sgh for a flow dir */
+    DetectHook hook_flow_dir_first_sgh_seen;
+
     uint32_t mpm_unique, mpm_reuse, mpm_none,
         mpm_uri_unique, mpm_uri_reuse, mpm_uri_none;
     uint32_t gh_unique, gh_reuse;
@@ -707,6 +722,10 @@ typedef struct DetectEngineCtx_ {
 #ifdef PROFILING
     struct SCProfileDetectCtx_ *profile_ctx;
 #endif
+
+    uint32_t iponly_rulecnt;
+    uint32_t drop_rulecnt;
+    uint32_t pass_rulecnt;
 } DetectEngineCtx;
 
 /* Engine groups profiles (low, medium, high, custom) */
@@ -738,9 +757,11 @@ typedef struct HttpReassembledBody_ {
 /**
   * Detection engine thread data.
   */
-typedef struct DetectionEngineThreadCtx_ {
+typedef struct DetectEngineThreadCtx_ {
     /* the thread to which this detection engine thread belongs */
     ThreadVars *tv;
+
+    uint8_t alert_flags;
 
     /* detection engine variables */
 
@@ -798,6 +819,9 @@ typedef struct DetectionEngineThreadCtx_ {
     uint8_t *de_state_sig_array;
 
     struct SigGroupHead_ *sgh;
+
+    struct StreamMsg_ *smsg;
+
     /** pointer to the current mpm ctx that is stored
      *  in a rule group head -- can be either a content
      *  or uricontent ctx. */
@@ -1155,6 +1179,11 @@ int SignatureIsFilesizeInspecting(Signature *);
 
 int DetectRegisterThreadCtxFuncs(DetectEngineCtx *, const char *name, void *(*InitFunc)(void *), void *data, void (*FreeFunc)(void *), int);
 void *DetectThreadCtxGetKeywordThreadCtx(DetectEngineThreadCtx *, int);
+
+/* hooks */
+int DetectHookInit(DetectHook *hook);
+int DetectHookRegister(DetectHook *hook, int (*Callback)());
+int DetectHookRun(DetectHook *hook, DetectEngineCtx *, DetectEngineThreadCtx *, Packet *);
 
 #endif /* __DETECT_H__ */
 

@@ -725,6 +725,13 @@ DetectEngineCtx *DetectEngineCtxInit(void) {
     /* init iprep... ignore errors for now */
     (void)SRepInit(de_ctx);
 
+    DetectHookInit(&de_ctx->hook_flow_first_pkt_in_dir);
+    DetectHookInit(&de_ctx->hook_flow_after_first_pkt_in_dir);
+    DetectHookInit(&de_ctx->hook_flow_all_pkts);
+    DetectHookInit(&de_ctx->hook_no_flow_all_pkts);
+    DetectHookInit(&de_ctx->hook_all_pkts);
+    DetectHookInit(&de_ctx->hook_flow_dir_first_sgh_seen);
+
     return de_ctx;
 error:
     return NULL;

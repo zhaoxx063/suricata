@@ -43,4 +43,6 @@ typedef struct DetectFilemagicData {
 void DetectFilemagicRegister (void);
 int FilemagicGlobalLookup(File *file);
 
+int FilemagicHook(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p);
+
 #endif /* __DETECT_FILEMAGIC_H__ */

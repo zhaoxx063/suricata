@@ -53,6 +53,7 @@
 
 #include "queue.h"
 #include "util-rohash.h"
+#include "util-validate.h"
 
 #ifndef HAVE_NSS
 
@@ -100,6 +101,42 @@ void DetectFileMd5Register(void) {
 
 	SCLogDebug("registering filemd5 rule option");
     return;
+}
+
+/**
+ *  \brief See if this flow requires file size tracking. If not, disable it.
+ *
+ *  Hook to run once per flow direction as soon as the SGH is known.
+ *
+ *  \param de_ctx Detection engine ctx
+ *  \param det_ctx Detection engine thread context
+ *  \param p Packet
+ *
+ *  \retval DETECT_HOOK_OK in any case
+ */
+int FileMd5Hook(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx, Packet *p)
+{
+    DEBUG_ASSERT_FLOW_LOCKED(p);
+
+    if (p->flowflags & FLOW_PKT_TOSERVER) {
+        /* see if this sgh requires us to consider file md5 */
+        if (!FileForceMd5() && (p->flow->sgh_toserver == NULL ||
+                    !(p->flow->sgh_toserver->flags & SIG_GROUP_HEAD_HAVEFILEMD5)))
+        {
+            SCLogDebug("disabling filemd5 for flow");
+            FileDisableMd5(p->flow, STREAM_TOSERVER);
+        }
+    } else if (p->flowflags & FLOW_PKT_TOCLIENT) {
+        /* check if this flow needs md5 tracking, if not disable it */
+        if (!FileForceMd5() && (p->flow->sgh_toclient == NULL ||
+                    !(p->flow->sgh_toclient->flags & SIG_GROUP_HEAD_HAVEFILEMD5)))
+        {
+            SCLogDebug("disabling filemd5 for flow");
+            FileDisableMd5(p->flow, STREAM_TOCLIENT);
+        }
+    }
+
+    return DETECT_HOOK_OK;
 }
 
 static int Md5ReadString(uint8_t *md5, char *str, char *filename, int line_no) {

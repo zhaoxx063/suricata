@@ -208,6 +208,12 @@ void PacketAlertFinalize(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx
     Signature *s = NULL;
     SigMatch *sm = NULL;
 
+    /* we are called w/o alerts too, when we might need to apply
+     * the tag keyword */
+    if (p->alerts.cnt > 0) {
+        SCPerfCounterAddUI64(det_ctx->counter_alerts, det_ctx->tv->sc_perf_pca, (uint64_t)p->alerts.cnt);
+    }
+
     while (i < p->alerts.cnt) {
         SCLogDebug("Sig->num: %"PRIu16, p->alerts.alerts[i].num);
         s = de_ctx->sig_array[p->alerts.alerts[i].num];
@@ -223,30 +229,22 @@ void PacketAlertFinalize(DetectEngineCtx *de_ctx, DetectEngineThreadCtx *det_ctx
                 sm = sm->next;
             }
 
-            if (s->flags & SIG_FLAG_IPONLY) {
-                if (((p->flowflags & FLOW_PKT_TOSERVER) && !(p->flowflags & FLOW_PKT_TOSERVER_IPONLY_SET)) ||
-                    ((p->flowflags & FLOW_PKT_TOCLIENT) && !(p->flowflags & FLOW_PKT_TOCLIENT_IPONLY_SET))) {
-                    SCLogDebug("testing against \"ip-only\" signatures");
+            if (s->flags & SIG_FLAG_IPONLY && p->flow != NULL) {
+                SCLogDebug("testing against \"ip-only\" signatures");
 
-                    if (p->flow != NULL) {
-                        /* Update flow flags for iponly */
-                        FLOWLOCK_WRLOCK(p->flow);
-                        FlowSetIPOnlyFlagNoLock(p->flow, p->flowflags & FLOW_PKT_TOSERVER ? 1 : 0);
-
-                        if (s->action & ACTION_DROP)
-                            p->flow->flags |= FLOW_ACTION_DROP;
-                        if (s->action & ACTION_REJECT)
-                            p->flow->flags |= FLOW_ACTION_DROP;
-                        if (s->action & ACTION_REJECT_DST)
-                            p->flow->flags |= FLOW_ACTION_DROP;
-                        if (s->action & ACTION_REJECT_BOTH)
-                            p->flow->flags |= FLOW_ACTION_DROP;
-                        if (s->action & ACTION_PASS) {
-                            FlowSetNoPacketInspectionFlag(p->flow);
-                        }
-                        FLOWLOCK_UNLOCK(p->flow);
-                    }
-                }
+                /* Update flow flags for iponly */
+                FLOWLOCK_WRLOCK(p->flow);
+                if (s->action & ACTION_DROP)
+                    p->flow->flags |= FLOW_ACTION_DROP;
+                if (s->action & ACTION_REJECT)
+                    p->flow->flags |= FLOW_ACTION_DROP;
+                if (s->action & ACTION_REJECT_DST)
+                    p->flow->flags |= FLOW_ACTION_DROP;
+                if (s->action & ACTION_REJECT_BOTH)
+                    p->flow->flags |= FLOW_ACTION_DROP;
+                if (s->action & ACTION_PASS)
+                    FlowSetNoPacketInspectionFlag(p->flow);
+                FLOWLOCK_UNLOCK(p->flow);
             }
 
             /* set verdict on packet */
