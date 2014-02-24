@@ -271,8 +271,7 @@ void UtRunModeRegister(void)
  */
 
 int UtSelftestTrue(void) {
-    if (1)return 1;
-    else  return 0;
+    return 1;
 }
 
 /** \brief False test
@@ -282,8 +281,7 @@ int UtSelftestTrue(void) {
  */
 
 int UtSelftestFalse(void) {
-    if (0)return 1;
-    else  return 0;
+    return 0;
 }
 #endif /* UNITTESTS */
 

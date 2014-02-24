@@ -643,7 +643,6 @@ static uint32_t DCERPCParseBINDCTXItem(DCERPC *dcerpc, uint8_t *input, uint32_t 
                 //            dcerpc->dcerpcbindbindack.numctxitems - dcerpc->dcerpcbindbindack.numctxitemsleft);
                 //    SCReturnUInt(0);
                 //}
-                break;
         }
     }
     dcerpc->dcerpcbindbindack.ctxbytesprocessed += (p - input);

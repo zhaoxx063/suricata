@@ -57,7 +57,6 @@ const char *StoragePrintType(StorageEnum type)
         case STORAGE_MAX:
             return "max";
     }
-    return "invalid";
 }
 
 void StorageInit(void)
@@ -259,7 +258,7 @@ void *StorageAllocById(Storage **storage, StorageEnum type, int id)
     if (store == NULL) {
         store = SCMalloc(sizeof(void *) * storage_max_id[type]);
         if (unlikely(store == NULL))
-        return NULL;
+            return NULL;
         memset(store, 0x00, sizeof(void *) * storage_max_id[type]);
     }
     SCLogDebug("store %p", store);
