@@ -1841,7 +1841,6 @@ static int UTHValidateDetectAddress(DetectAddress *ad, const char *one, const ch
             }
 
             return TRUE;
-            break;
 
         case AF_INET6:
             PrintInet(AF_INET6, (const void *)&ad->ip.addr_data32[0], str1, sizeof(str1));
@@ -1860,7 +1859,6 @@ static int UTHValidateDetectAddress(DetectAddress *ad, const char *one, const ch
             }
 
             return TRUE;
-            break;
     }
 
     return FALSE;
