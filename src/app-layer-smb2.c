@@ -182,7 +182,6 @@ static uint32_t SMB2ParseHeader(void *smb2_state, AppLayerParserState *pstate,
                     sstate->smb2.Signature[15] = *(p + 63);
                     sstate->bytesprocessed += SMB2_HDR_LEN;
                     SCReturnUInt(64U);
-                    break;
                 } else {
                     //sstate->smb2.protocol[0] = *(p++);
                     if (*(p++) != 0xfe)

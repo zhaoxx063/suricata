@@ -285,6 +285,4 @@ const char * SCErrorToString(SCError err)
         CASE_CODE (SC_ERR_APP_LAYER_PROTOCOL_DETECTION);
         CASE_CODE (SC_ERR_PCIE_INIT_FAILED);
     }
-
-    return "UNKNOWN_ERROR";
 }

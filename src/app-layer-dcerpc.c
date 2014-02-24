@@ -643,7 +643,6 @@ static uint32_t DCERPCParseBINDCTXItem(DCERPC *dcerpc, uint8_t *input, uint32_t 
                 //            dcerpc->dcerpcbindbindack.numctxitems - dcerpc->dcerpcbindbindack.numctxitemsleft);
                 //    SCReturnUInt(0);
                 //}
-                break;
         }
     }
     dcerpc->dcerpcbindbindack.ctxbytesprocessed += (p - input);
@@ -982,11 +981,9 @@ static uint32_t DCERPCParseBIND(DCERPC *dcerpc, uint8_t *input, uint32_t input_l
                 p++;
                 --input_len;
                 break;
-                /* fall through */
             default:
                 dcerpc->bytesprocessed++;
                 SCReturnUInt(1);
-                break;
         }
     }
     dcerpc->bytesprocessed += (p - input);
@@ -1079,7 +1076,6 @@ static uint32_t DCERPCParseBINDACK(DCERPC *dcerpc, uint8_t *input, uint32_t inpu
         default:
             dcerpc->bytesprocessed++;
             SCReturnUInt(1);
-            break;
     }
     dcerpc->bytesprocessed += (p - input);
     SCReturnUInt((uint32_t)(p - input));
@@ -1173,7 +1169,6 @@ static uint32_t DCERPCParseREQUEST(DCERPC *dcerpc, uint8_t *input, uint32_t inpu
         default:
             dcerpc->bytesprocessed++;
             SCReturnUInt(1);
-            break;
     }
     dcerpc->bytesprocessed += (p - input);
     SCReturnUInt((uint32_t)(p - input));
@@ -1319,7 +1314,6 @@ static int DCERPCParseHeader(DCERPC *dcerpc, uint8_t *input, uint32_t input_len)
                     }
                     dcerpc->bytesprocessed = DCERPC_HDR_LEN;
                     SCReturnInt(16);
-                    break;
                 } else {
                     dcerpc->dcerpchdr.rpc_vers = *(p++);
                     if (!(--input_len))
