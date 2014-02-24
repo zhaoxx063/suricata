@@ -217,6 +217,36 @@
 #endif
 #endif
 
+/* Wrapper for break statements that are unreachable. In some cases,
+ * we prefer to keep them anyway. In those cases, the code above it
+ * is complicated. Changes there may lead to unintentional fall
+ * throughs. This wrapper suppresses the warning on clang.
+ *
+ * As an additional check, it adds a 'BUG_ON(1)' when we are in
+ * debug validation mode.
+ */
+#ifndef DEBUG_VALIDATION
+    #ifdef __clang__
+        #define break_UNREACHABLE                                   \
+        _Pragma("clang diagnostic push")                            \
+        _Pragma("clang diagnostic ignored \"-Wunreachable-code\"")  \
+        break;                                                      \
+        _Pragma("clang diagnostic pop")
+    #else /* gcc and others */
+        #define break_UNREACHABLE break;
+    #endif
+#else
+    #ifdef __clang__
+        #define break_UNREACHABLE                                   \
+        _Pragma("clang diagnostic push")                            \
+        _Pragma("clang diagnostic ignored \"-Wunreachable-code\"")  \
+        BUG_ON(1);                                                  \
+        _Pragma("clang diagnostic pop")
+    #else /* gcc and others */
+        #define break_UNREACHABLE BUG_ON(1);
+    #endif
+#endif
+
 /* we need this to stringify the defines which are supplied at compiletime see:
    http://gcc.gnu.org/onlinedocs/gcc-3.4.1/cpp/Stringification.html#Stringification */
 #define xstr(s) str(s)
