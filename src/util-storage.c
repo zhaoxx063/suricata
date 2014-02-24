@@ -57,6 +57,7 @@ const char *StoragePrintType(StorageEnum type)
         case STORAGE_MAX:
             return "max";
     }
+    return_UNREACHABLE("invalid");
 }
 
 void StorageInit(void)

@@ -26,6 +26,7 @@
  *       removal of duplicates and entries have to be made in util-error.c
  */
 
+#include "suricata-common.h"
 #include "util-error.h"
 
 #define CASE_CODE(E)  case E: return #E
@@ -285,4 +286,5 @@ const char * SCErrorToString(SCError err)
         CASE_CODE (SC_ERR_APP_LAYER_PROTOCOL_DETECTION);
         CASE_CODE (SC_ERR_PCIE_INIT_FAILED);
     }
+    return_UNREACHABLE("UNKNOWN_ERROR");
 }
