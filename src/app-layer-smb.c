@@ -252,9 +252,8 @@ static uint32_t SMBParseWriteAndX(Flow *f, void *smb_state,
             break;
             /* fall through */
         default:
-		sstate->bytesprocessed++;
-		SCReturnUInt(1);
-		break;
+            sstate->bytesprocessed++;
+            SCReturnUInt(1);
     }
     sstate->bytesprocessed += (p - input);
     SCReturnUInt((uint32_t)(p - input));
@@ -395,7 +394,6 @@ static uint32_t SMBParseReadAndX(Flow *f, void *smb_state,
         default:
             sstate->bytesprocessed++;
             SCReturnUInt(1);
-            break;
 
     }
     sstate->bytesprocessed += (p - input);
@@ -618,7 +616,6 @@ static uint32_t SMBParseTransact(Flow *f, void *smb_state,
             sstate->bytesprocessed++;
             sstate->andx.andxbytesprocessed++;
             SCReturnUInt(1);
-            break;
     }
     sstate->bytesprocessed += (p - input);
     sstate->andx.andxbytesprocessed += (p - input);
@@ -972,7 +969,6 @@ static int SMBParseHeader(Flow *f, void *smb_state,
                     sstate->smb.mid |= *(p + 31);
                     sstate->bytesprocessed += SMB_HDR_LEN;
                     SCReturnInt(32);
-                    break;
                 } else {
                     if (*(p++) != 0xff) {
                         SCLogDebug("SMB Header did not validate");

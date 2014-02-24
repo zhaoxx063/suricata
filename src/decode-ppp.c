@@ -67,9 +67,9 @@ int DecodePPP(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p, uint8_t *pkt, ui
 
             if (likely(IPV4_GET_RAW_VER((IPV4Hdr *)(pkt + PPP_HEADER_LEN)) == 4)) {
                 return DecodeIPV4(tv, dtv, p, pkt + PPP_HEADER_LEN, len - PPP_HEADER_LEN, pq);
-            } else
+            } else {
                 return TM_ECODE_FAILED;
-            break;
+            }
 
         case PPP_IP:
             if (unlikely(len < (PPP_HEADER_LEN + IPV4_HEADER_LEN))) {

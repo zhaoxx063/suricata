@@ -263,7 +263,6 @@ static int DCERPCUDPParseHeader(Flow *f, void *dcerpcudp_state,
 #endif
 				}
 				SCReturnUInt(80);
-				break;
 			} else {
 				sstate->dcerpc.dcerpchdrudp.rpc_vers = *(p++);
 				if (sstate->dcerpc.dcerpchdrudp.rpc_vers != 4) {

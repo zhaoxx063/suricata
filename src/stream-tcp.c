@@ -4701,7 +4701,6 @@ static int StreamTcpValidateRst(TcpSession *ssn, Packet *p)
                     return 0;
                 }
             }
-            break;
         case OS_POLICY_OLD_LINUX:
         case OS_POLICY_LINUX:
         case OS_POLICY_SOLARIS:
@@ -4740,7 +4739,6 @@ static int StreamTcpValidateRst(TcpSession *ssn, Packet *p)
                     return 0;
                 }
             }
-            break;
         default:
         case OS_POLICY_BSD:
         case OS_POLICY_FIRST:
@@ -4774,9 +4772,7 @@ static int StreamTcpValidateRst(TcpSession *ssn, Packet *p)
                     return 0;
                 }
             }
-            break;
     }
-    return 0;
 }
 
 /**

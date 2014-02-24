@@ -1711,7 +1711,6 @@ int DetectAddressMatch(DetectAddress *dd, Address *a)
                 SCReturnInt(0);
             }
 
-            break;
         case AF_INET6:
             if (AddressIPv6Ge(a, &dd->ip) == 1 &&
                 AddressIPv6Le(a, &dd->ip2) == 1)
@@ -1721,7 +1720,6 @@ int DetectAddressMatch(DetectAddress *dd, Address *a)
                 SCReturnInt(0);
             }
 
-            break;
         default:
             SCLogDebug("What other address type can we have :-/");
             break;
@@ -1841,7 +1839,6 @@ static int UTHValidateDetectAddress(DetectAddress *ad, const char *one, const ch
             }
 
             return TRUE;
-            break;
 
         case AF_INET6:
             PrintInet(AF_INET6, (const void *)&ad->ip.addr_data32[0], str1, sizeof(str1));
@@ -1860,7 +1857,6 @@ static int UTHValidateDetectAddress(DetectAddress *ad, const char *one, const ch
             }
 
             return TRUE;
-            break;
     }
 
     return FALSE;

@@ -317,7 +317,6 @@ int DetectIPRepSetup (DetectEngineCtx *de_ctx, Signature *s, char *rawstr)
             break;
         default:
             goto error;
-            break;
     }
 
     if (value != NULL && strlen(value) > 0) {

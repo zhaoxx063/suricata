@@ -178,27 +178,21 @@ int DetectFlowintMatch(ThreadVars *t, DetectEngineThreadCtx *det_ctx,
             case FLOWINT_MODIFIER_EQ:
                 SCLogDebug("( %u EQ %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value == targetval;
-                break;
             case FLOWINT_MODIFIER_NE:
                 SCLogDebug("( %u NE %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value != targetval;
-                break;
             case FLOWINT_MODIFIER_LT:
                 SCLogDebug("( %u LT %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value < targetval;
-                break;
             case FLOWINT_MODIFIER_LE:
                 SCLogDebug("( %u LE %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value <= targetval;
-                break;
             case FLOWINT_MODIFIER_GT:
                 SCLogDebug("( %u GT %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value > targetval;
-                break;
             case FLOWINT_MODIFIER_GE:
                 SCLogDebug("( %u GE %u )", fv->data.fv_int.value, targetval);
                 return fv->data.fv_int.value >= targetval;
-                break;
             default:
                 SCLogDebug("Unknown Modifier!");
 #ifdef DEBUG
