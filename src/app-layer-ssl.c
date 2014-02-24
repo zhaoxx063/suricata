@@ -207,8 +207,10 @@ static int SSLv3ParseHandshakeType(SSLState *ssl_state, uint8_t *input,
                 parsed += write_len;
                 return parsed;
             }
+            break_UNREACHABLE; /* should be unreachable, but keeping it here in
+                                * case changes above would lead to unintentional
+                                * fall through. BUG_ON(1) in case of debug val. */
 
-            break;
         case SSLV3_HS_HELLO_REQUEST:
         case SSLV3_HS_CERTIFICATE_REQUEST:
         case SSLV3_HS_CERTIFICATE_VERIFY:
@@ -755,8 +757,9 @@ static int SSLv3Decode(uint8_t direction, SSLState *ssl_state,
                 }
                 return parsed;
             }
-
-            break;
+            break_UNREACHABLE; /* should be unreachable, but keeping it here in
+                                * case changes above would lead to unintentional
+                                * fall through. BUG_ON(1) in case of debug val. */
 
         default:
             /* \todo fix the event from invalid rule to unknown rule */
