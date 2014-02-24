@@ -1575,6 +1575,7 @@
         fi
     fi
 
+CFLAGS="${CFLAGS} -Wunreachable-code"
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
