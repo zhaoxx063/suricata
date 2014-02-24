@@ -466,12 +466,14 @@ void hashlittle2(
   uint32_t   *pb)        /* IN: secondary initval, OUT: secondary hash */
 {
   uint32_t a,b,c;                                          /* internal state */
+#if HASH_LITTLE_ENDIAN == 1
   union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */
-
+#endif
   /* Set up the internal state */
   a = b = c = 0xdeadbeef + ((uint32_t)length) + *pc;
   c += *pb;
 
+#if HASH_LITTLE_ENDIAN == 1
   u.ptr = key;
   if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
@@ -586,6 +588,7 @@ void hashlittle2(
     }
 
   } else {                        /* need to read the key one byte at a time */
+#endif /* HASH_LITTLE_ENDIAN == 1 */
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */
@@ -626,7 +629,9 @@ void hashlittle2(
              break;
     case 0 : *pc=c; *pb=b; return;  /* zero length strings require no mixing */
     }
+#if HASH_LITTLE_ENDIAN == 1
   }
+#endif
 
   final(a,b,c);
   *pc=c; *pb=b;
@@ -643,11 +648,13 @@ void hashlittle2(
 uint32_t hashbig( const void *key, size_t length, uint32_t initval)
 {
   uint32_t a,b,c;
+#if HASH_BIG_ENDIAN == 1
   union { const void *ptr; size_t i; } u; /* to cast key to (size_t) happily */
-
+#endif
   /* Set up the internal state */
   a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 
+#if HASH_BIG_ENDIAN == 1
   u.ptr = key;
   if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
@@ -715,6 +722,7 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
 #endif /* !VALGRIND */
 
   } else {                        /* need to read the key one byte at a time */
+#endif /* HASH_BIG_ENDIAN == 1 */
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */
@@ -755,7 +763,9 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
              break;
     case 0 : return c;
     }
+#if HASH_BIG_ENDIAN == 1
   }
+#endif
 
   final(a,b,c);
   return c;
