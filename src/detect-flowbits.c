@@ -156,8 +156,6 @@ int DetectFlowbitMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *p
             SCLogError(SC_ERR_UNKNOWN_VALUE, "unknown cmd %" PRIu32 "", fd->cmd);
             return 0;
     }
-
-    return 0;
 }
 
 int DetectFlowbitSetup (DetectEngineCtx *de_ctx, Signature *s, char *rawstr)
