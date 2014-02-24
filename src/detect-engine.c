@@ -1577,6 +1577,7 @@ const char *DetectSigmatchListEnumToString(enum DetectSigmatchListEnum type) {
         case DETECT_SM_LIST_NOTSET:
             return "not set (internal)";
     }
+    return_UNREACHABLE("error");
 }
 
 
