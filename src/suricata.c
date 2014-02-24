@@ -1472,11 +1472,11 @@ static TmEcode ParseCommandLine(int argc, char** argv, SCInstance *suri)
                 usage(argv[0]);
                 return TM_ECODE_FAILED;
             }
+            break;
 #else
             SCLogError(SC_ERR_IPFW_NOSUPPORT,"IPFW not enabled. Make sure to pass --enable-ipfw to configure when building.");
             return TM_ECODE_FAILED;
 #endif /* IPFW */
-            break;
         case 'r':
             if (suri->run_mode == RUNMODE_UNKNOWN) {
                 suri->run_mode = RUNMODE_PCAP_FILE;

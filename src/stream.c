@@ -263,7 +263,6 @@ int StreamSegmentForEach(const Packet *p, uint8_t flag, StreamSegmentCallback Ca
     switch(p->proto) {
         case IPPROTO_TCP:
             return StreamTcpSegmentForEach(p, flag, CallbackFunc, data);
-            break;
 #ifdef DEBUG
         case IPPROTO_UDP:
             SCLogWarning(SC_ERR_UNKNOWN_PROTOCOL, "UDP is currently unsupported");
