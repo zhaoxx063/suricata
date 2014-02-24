@@ -247,6 +247,35 @@
     #endif
 #endif
 
+/* Wrapper for return statements that are unreachable according to
+ * clangs -Wunreachable-code. However, in some cases removing these
+ * will lead to GCC complaining "error: control reaches end of
+ * non-void function [-Werror=return-type]"
+ * This has been observed in functions only containing a switch
+ * statement, where all the cases of an enum were handled in the
+ * switch, and of them return directly. */
+#ifndef DEBUG_VALIDATION
+    #ifdef __clang__
+        #define return_UNREACHABLE                                  \
+        _Pragma("clang diagnostic push")                            \
+        _Pragma("clang diagnostic ignored \"-Wunreachable-code\"")  \
+        return                                                      \
+        _Pragma("clang diagnostic pop")
+    #else /* gcc and others */
+        #define return_UNREACHABLE return
+    #endif
+#else
+    #ifdef __clang__
+        #define return_UNREACHABLE                                  \
+        _Pragma("clang diagnostic push")                            \
+        _Pragma("clang diagnostic ignored \"-Wunreachable-code\"")  \
+        BUG_ON(1); return                                           \
+        _Pragma("clang diagnostic pop")
+    #else /* gcc and others */
+        #define return_UNREACHABLE BUG_ON(1); return
+    #endif
+#endif
+
 /* we need this to stringify the defines which are supplied at compiletime see:
    http://gcc.gnu.org/onlinedocs/gcc-3.4.1/cpp/Stringification.html#Stringification */
 #define xstr(s) str(s)
