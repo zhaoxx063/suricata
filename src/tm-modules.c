@@ -253,4 +253,5 @@ const char * TmModuleTmmIdToString(TmmId id)
 
         CASE_CODE (TMM_SIZE);
     }
+    return_UNREACHABLE("<error>");
 }
