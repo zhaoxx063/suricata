@@ -1291,6 +1291,14 @@ static TmEcode ThreadCtxDoInit (DetectEngineCtx *de_ctx, DetectEngineThreadCtx *
         memset(det_ctx->de_state_sig_array, 0,
                det_ctx->de_state_sig_array_len * sizeof(uint8_t));
 
+        det_ctx->de_state_start_txid_array_len = de_ctx->sig_array_len;
+        det_ctx->de_state_start_txid_array = SCMalloc(det_ctx->de_state_start_txid_array_len * sizeof(uint64_t));
+        if (det_ctx->de_state_start_txid_array == NULL) {
+            return TM_ECODE_FAILED;
+        }
+        memset(det_ctx->de_state_start_txid_array, 0,
+               det_ctx->de_state_start_txid_array_len * sizeof(uint64_t));
+
         det_ctx->match_array_len = de_ctx->sig_array_len;
         det_ctx->match_array = SCMalloc(det_ctx->match_array_len * sizeof(Signature *));
         if (det_ctx->match_array == NULL) {
@@ -1476,6 +1484,8 @@ TmEcode DetectEngineThreadCtxDeinit(ThreadVars *tv, void *data)
 
     if (det_ctx->de_state_sig_array != NULL)
         SCFree(det_ctx->de_state_sig_array);
+    if (det_ctx->de_state_start_txid_array != NULL)
+        SCFree(det_ctx->de_state_start_txid_array);
     if (det_ctx->match_array != NULL)
         SCFree(det_ctx->match_array);
 

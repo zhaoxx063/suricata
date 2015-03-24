@@ -443,7 +443,15 @@ int DeStateDetectStartDetection(ThreadVars *tv, DetectEngineCtx *de_ctx,
             goto end;
         }
 
+        /* if continue detection already inspected this rule for this tx,
+         * continue with the first not-inspected tx */
+        uint64_t stored_tx_id = det_ctx->de_state_start_txid_array[s->num];
         tx_id = AppLayerParserGetTransactionInspectId(f->alparser, flags);
+        if (stored_tx_id > tx_id) {
+            SCLogDebug("using stored_tx_id %u instead of %u", (uint)stored_tx_id, (uint)tx_id);
+            tx_id = stored_tx_id;
+        }
+
         total_txs = AppLayerParserGetTxCnt(f->proto, alproto, alstate);
         SCLogDebug("total_txs %"PRIu64, total_txs);
 
@@ -673,6 +681,12 @@ static int DoInspectItem(ThreadVars *tv,
                 SCLogDebug("skip and bypass: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
             } else {
                 SCLogDebug("just skip: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
+
+                /* make sure that if we reinspect this right now from
+                 * start detection, we skip this tx we just matched on */
+                det_ctx->de_state_start_txid_array[item->sid] = inspect_tx_id + 1;
+
+                SCLogDebug("storing tx_id %u for this sid", (uint)inspect_tx_id + 1);
             }
             return 0;
         }
@@ -699,6 +713,12 @@ static int DoInspectItem(ThreadVars *tv,
                 SCLogDebug("skip and bypass: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
             } else {
                 SCLogDebug("just skip: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
+
+                /* make sure that if we reinspect this right now from
+                 * start detection, we skip this tx we just matched on */
+                det_ctx->de_state_start_txid_array[item->sid] = inspect_tx_id + 1;
+
+                SCLogDebug("storing tx_id %u for this sid", (uint)inspect_tx_id + 1);
             }
             return 0;
         }
@@ -762,6 +782,12 @@ static int DoInspectItem(ThreadVars *tv,
     if (TxIsLast(inspect_tx_id, total_txs) || inprogress || next_tx_no_progress) {
         det_ctx->de_state_sig_array[item->sid] = DE_STATE_MATCH_NO_NEW_STATE;
         SCLogDebug("inspected, now bypass: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
+    } else {
+        /* make sure that if we reinspect this right now from
+         * start detection, we skip this tx we just matched on */
+        det_ctx->de_state_start_txid_array[item->sid] = inspect_tx_id + 1;
+
+        SCLogDebug("storing tx_id %u for this sid", (uint)inspect_tx_id + 1);
     }
     RULE_PROFILING_END(det_ctx, s, (alert == 1), p);
 

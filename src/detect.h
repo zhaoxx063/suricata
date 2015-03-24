@@ -848,6 +848,9 @@ typedef struct DetectEngineThreadCtx_ {
     SigIntId de_state_sig_array_len;
     uint8_t *de_state_sig_array;
 
+    SigIntId de_state_start_txid_array_len;
+    uint64_t *de_state_start_txid_array;
+
     struct SigGroupHead_ *sgh;
     /** pointer to the current mpm ctx that is stored
      *  in a rule group head -- can be either a content

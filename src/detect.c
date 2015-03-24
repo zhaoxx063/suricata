@@ -1346,6 +1346,8 @@ int SigMatchSignatures(ThreadVars *th_v, DetectEngineCtx *de_ctx, DetectEngineTh
     if ((p->flags & PKT_HAS_FLOW) && has_state) {
         /* initialize to 0(DE_STATE_MATCH_HAS_NEW_STATE) */
         memset(det_ctx->de_state_sig_array, 0x00, det_ctx->de_state_sig_array_len);
+        memset(det_ctx->de_state_start_txid_array, 0x00,
+                det_ctx->de_state_start_txid_array_len * sizeof(uint64_t));
         int has_inspectable_state = DeStateFlowHasInspectableState(pflow, alproto, alversion, flags);
         if (has_inspectable_state == 1) {
             DeStateDetectContinueDetection(th_v, de_ctx, det_ctx, p, pflow,
