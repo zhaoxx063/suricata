@@ -483,7 +483,7 @@ int DeStateDetectStartDetection(ThreadVars *tv, DetectEngineCtx *de_ctx,
         total_txs = AppLayerParserGetTxCnt(f->proto, alproto, alstate);
         SCLogDebug("total_txs %"PRIu64, total_txs);
 
-        SCLogDebug("starting: start tx %u, packet %u", (uint)tx_id, (uint)p->pcap_cnt);
+        SCLogDebug("starting: start tx %u, packet %u, rule %u", (uint)tx_id, (uint)p->pcap_cnt, s->num);
 
         for (; tx_id < total_txs; tx_id++) {
             int total_matches = 0;
@@ -809,13 +809,13 @@ static int DoInspectItem(ThreadVars *tv,
      * there is no need for it */
     if (TxIsLast(inspect_tx_id, total_txs) || inprogress || next_tx_no_progress) {
         det_ctx->de_state_sig_array[item->sid] = DE_STATE_MATCH_NO_NEW_STATE;
-        SCLogDebug("inspected, now bypass: tx %u packet %u", (uint)inspect_tx_id, (uint)p->pcap_cnt);
+        SCLogDebug("inspected, now bypass sid %u: tx %u packet %u", item->sid, (uint)inspect_tx_id, (uint)p->pcap_cnt);
     } else {
         /* make sure that if we reinspect this right now from
          * start detection, we skip this tx we just matched on */
         det_ctx->de_state_start_txid_array[item->sid] = inspect_tx_id + 1;
 
-        SCLogDebug("storing tx_id %u for this sid", (uint)inspect_tx_id + 1);
+        SCLogDebug("storing tx_id %u for sid %u", (uint)inspect_tx_id + 1, item->sid);
     }
     RULE_PROFILING_END(det_ctx, s, (alert == 1), p);
 
