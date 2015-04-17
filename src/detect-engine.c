@@ -1541,10 +1541,16 @@ TmEcode DetectEngineThreadCtxDeinit(ThreadVars *tv, void *data)
         return TM_ECODE_OK;
     }
 
+    /* multi-tenancy structures */
     if (det_ctx->mt_det_ctxs_hash != NULL) {
         HashTableFree(det_ctx->mt_det_ctxs_hash);
         det_ctx->mt_det_ctxs_hash = NULL;
     }
+    if (det_ctx->tenant_array != NULL) {
+        SCFree(det_ctx->tenant_array);
+        det_ctx->tenant_array = NULL;
+    }
+
     DetectEngineThreadCtxFree(det_ctx);
 
     return TM_ECODE_OK;
