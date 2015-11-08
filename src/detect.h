@@ -42,7 +42,8 @@
 #include "reputation.h"
 
 #include "detect-mark.h"
-
+/* add by vinglong@163.com */
+#include "ndpi-typedefs.h"
 #define DETECT_MAX_RULE_SIZE 8192
 
 /* forward declarations for the structures from detect-engine-sigorder.h */
@@ -576,6 +577,8 @@ typedef struct DetectEngineCtx_ {
 
     Signature *sig_list;
     uint32_t sig_cnt;
+    /* add by vinglong@163.com */
+    struct ndpi_detection_module_struct *ndpi_struct;
 
     /* version of the srep data */
     uint32_t srep_version;
