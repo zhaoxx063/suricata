@@ -42,6 +42,9 @@
 #include "util-profiling.h"
 #include "util-signal.h"
 #include "queue.h"
+/* eshine: add by zhaozhang@yxlink.com */
+#include "protocol_dissector.h"
+
 
 #ifdef PROFILE_LOCKING
 __thread uint64_t mutex_lock_contention;
@@ -1121,6 +1124,8 @@ ThreadVars *TmThreadCreate(char *name, char *inq_name, char *inqh_name,
 
     if (mucond != 0)
         TmThreadInitMC(tv);
+    /* eshine: add by zhaozhang@yxlink.com for init ndpi_dissector */
+    init_ndpi_dissector(tv);
 
     return tv;
 
@@ -1647,6 +1652,8 @@ void TmThreadFree(ThreadVars *tv)
     SCLogDebug("Freeing thread '%s'.", tv->name);
 
     SCMutexDestroy(&tv->sc_perf_pctx.m);
+    /* eshine: add by zhaozhang@yxlink.com for clean up ndpi dissector */
+    terminateDetection(tv);
 
     s = (TmSlot *)tv->tm_slots;
     while (s) {
